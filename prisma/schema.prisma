@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id                String          @id @default(uuid())
+  email             String          @unique
+  password          String
+  role              Role            @default(USER)
+  accessToken       String          @unique
+  userInformation   UserInformation @relation(fields: [userInformationId], references: [id])
+  userInformationId String          @unique
+
+  @@index([email])
+  @@index([userInformationId])
+}
+
+model UserInformation {
+  id         String  @id @default(uuid())
+  firstName  String
+  middleName String?
+  lastName   String
+  addess     String
+  contact    String  @unique
+  User       User?
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Product {
+  id              String         @id @default(uuid())
+  title           String
+  description     String
+  price           Float
+  productImage    ProductImage[]
+  productBrand    Brand          @relation(fields: [brandId], references: [id])
+  brandId         String
+  productCategory Category       @relation(fields: [categoryId], references: [id])
+  categoryId      String
+
+  @@index([brandId])
+  @@index([categoryId])
+}
+
+model ProductImage {
+  id        String  @id @default(uuid())
+  image     String  @unique
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  @@index([productId])
+}
+
+model Brand {
+  id      String    @id @default(uuid())
+  name    String    @unique
+  image   String?   @unique
+  Product Product[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String
+  Product     Product[]
+}
