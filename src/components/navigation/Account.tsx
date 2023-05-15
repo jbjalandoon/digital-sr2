@@ -1,15 +1,21 @@
 "use client";
 
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 export default function Account() {
-  const { data: session } = useSession();
+  const { data, status } = useSession();
 
-  if (session && session.user) {
+  if (status === "loading") {
+    return <div className=''>Loading...</div>;
+  }
+
+  if (data && data.user) {
     return (
       <div className=''>
-        <button className=''>{session.user.name}</button>
+        <button className='' onClick={() => signOut()}>
+          {data.user.email}
+        </button>
       </div>
     );
   }
