@@ -5,7 +5,6 @@ import Link from "next/link";
 
 export default function Account() {
   const { data, status } = useSession();
-
   if (status === "loading") {
     return <div className=''>Loading...</div>;
   }

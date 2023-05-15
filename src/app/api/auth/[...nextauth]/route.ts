@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import NextAuth from "next-auth";
 import * as bcrypt from "bcrypt";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { signJwt } from "@/lib/jwt";
 
 const handler = NextAuth({
   providers: [
@@ -22,15 +23,28 @@ const handler = NextAuth({
             where: {
               email: credentials?.username,
             },
+            include: {
+              userInformation: true,
+            },
           });
-          
+          console.log(user);
           if (user) {
             const passwordCorrect = await bcrypt.compare(
               credentials?.password as string,
               user.password
             );
             if (passwordCorrect) {
-              return user;
+              const acessToken = signJwt({
+                email: user.email,
+                role: user.role,
+              });
+              return {
+                id: user.id,
+                name: user.userInformation.firstName,
+                email: user.email,
+                role: user.role,
+                accessToken: acessToken,
+              };
             }
             // Any object returned will be saved in `user` property of the JWT
             return null;
@@ -43,6 +57,16 @@ const handler = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      return { ...token, ...user };
+    },
+    async session({ session, token }) {
+      session.user = token as any;
+      return session;
+    },
+  },
 });
 
 export { handler as GET, handler as POST };
+``;
