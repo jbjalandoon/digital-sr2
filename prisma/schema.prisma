@@ -16,7 +16,7 @@ model User {
   email             String          @unique
   password          String
   role              Role            @default(USER)
-  accessToken       String          @unique
+  accessToken       String?         @unique
   userInformation   UserInformation @relation(fields: [userInformationId], references: [id])
   userInformationId String          @unique
 
@@ -29,8 +29,8 @@ model UserInformation {
   firstName  String
   middleName String?
   lastName   String
-  addess     String
-  contact    String  @unique
+  addess     String?
+  contact    String? @unique
   User       User?
 }
 
