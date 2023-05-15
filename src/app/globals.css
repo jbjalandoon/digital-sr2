@@ -17,5 +17,5 @@
 }
 
 body {
-  @apply bg-gray-300 flex justify-center text-slate-200;
+  @apply bg-slate-900 flex items-center text-slate-200 min-h-screen flex-col;
 }
